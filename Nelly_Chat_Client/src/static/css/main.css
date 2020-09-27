@@ -1,0 +1,38 @@
+.headerStyle
+    {
+        background-color:d8efc5;
+        width: 100% !Important;
+        height: 102px;
+        padding-left: 0px;padding-right: 0px !Important;
+    }
+
+.footerStyle
+{
+    background-color:d8efc5;
+    width: 100%;
+    height: 62px;
+}
+
+.chatWindow
+{
+   width: 375pt; 
+   height: 100%;
+   background-image: linear-gradient(#96E59ACC, #44A36980, #1B767480);
+   margin: auto;
+}
+
+.userMessage
+{
+    width:290pt;
+    background:#FFFFFF;
+    columns: #706E6E;
+    margin-right: auto;
+    align-content:right;    
+}
+
+.NellyMessage
+{
+    width:290pt;
+    background:#52B257DE;  
+    color: #FFFFFF;  
+}

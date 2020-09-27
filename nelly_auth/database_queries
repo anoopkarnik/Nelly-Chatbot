@@ -1,0 +1,13 @@
+create database nelly_auth
+
+use nelly_auth 
+
+create table permissions(permission_id int(11) NOT NULL auto_increment primary key, permission_name varchar(500) NOT NULL, permission_description varchar(1000) NOT NULL);
+
+create table roles(role_id int(11) NOT NULL auto_increment primary key, role_name varchar(500) NOT NULL, role_description varchar(1000) NOT NULL, permission_id  int(11) NOT NULL DEFAULT 1,FOREIGN KEY(permission_id) references permissions(permission_id));
+
+insert into permissions values(1,'Free Access','Free Access to User');
+
+insert into roles values(1,'Free User','Free User',1);
+
+create table user(user_id int NOT NULL auto_increment primary key,session_id varchar(1000) NOT NULL,user_uuid NOT NULL varchar(1000) customer_email varchar(1000) NOT NULL, id_token varchar(5000) NOT NULL, access_token NOT NULL varchar(5000),role_id INT NOT NULL DEFAULT 1,delete_flag INT NOT NULL DEFAULT 0, created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_date TIMESTAMP NULL,FOREIGN KEY(role_id) references roles(role_id));

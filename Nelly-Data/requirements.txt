@@ -1,0 +1,7 @@
+dnspython
+pymongo
+requests
+falcon
+nltk
+stanford-openie
+transformers

@@ -1,0 +1,7 @@
+{
+    "MYSQL_HOST" :"nelly-auth.cdathrayoc8e.us-east-2.rds.amazonaws.com",
+    "MYSQL_USER" :"admin",
+    "MYSQL_PASSWORD" :"Nellynerv123",
+    "MYSQL_DB" :"nelly_auth",
+    "MYSQL_PORT" :3306
+}

@@ -1,0 +1,155 @@
+<html>
+    <head><title> Interactive Run </title>
+    <link rel="stylesheet" href="{{url_for('static', filename ='css/main.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.css">
+    <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    </head>
+    <body>
+        <div class="columns" style="height: 100%">
+            <div class="chatWindow">
+              <section style="height: 100%">
+                <div id="parent"   style="overflow: auto; height: calc(100% - 76px); padding-top: 1em; padding-bottom: 0; padding-left: 0; padding-right: 0;">
+                    <article >
+                      <div>
+                         <div>
+                          <img src="{{url_for('static', filename='images/NellyIcon.png')}}" style="width: .84in; height: .48in;display: block;
+                           margin: left;"/> 
+                        </div>
+                      </div>
+                    </article>
+                </div>
+                <div>
+                  <form id = "interact">
+                      <div class="field is-grouped">
+                        <p class="control is-expanded">
+                          <input class="input" type="text" id="userInput" name="userInput" placeholder="Type something">
+                        </p>
+                        <p class="control">
+                          <input type="image" id="image" alt="Submit"  src="{{url_for('static', filename='images/send-button.png')}}"  style=" width: 37; height: 37; opacity: 100;">
+                        </p>
+                        <!-- <p class="control">
+                          <button id="close" type="reset" class="button has-text-white-ter has-background-grey-dark">
+                            Reset Connection
+                          </button>
+                        </p> -->
+                      </div>
+                  </form>
+                </div>
+              </section>
+            </div>
+        </div>
+
+        <script>
+            function createChatRow(agent, text) {
+                var article = document.createElement("article");
+                article.className = "media child" + (agent === "You" ? " userMessage " : agent === "Nelly" ? " NellyMessage" : "");
+
+                var figure = document.createElement("figure");
+                figure.className = "media-left";
+
+                var span = document.createElement("span");
+                span.className = "icon is-large";
+
+                var icon = document.createElement("i");
+                icon.className = "fas fas fa-2x" + (agent === "You" ? " fa-user " : agent === "Nelly" ? " fa-robot" : "");
+
+                var media = document.createElement("div");
+                media.className = "media-content";
+
+                var content = document.createElement("div");
+                content.className = "content";
+
+                var para = document.createElement("p");
+                var paraText = document.createTextNode(text);
+
+                var strong = document.createElement("strong");
+                strong.innerHTML = agent;
+                var br = document.createElement("br");
+
+                para.appendChild(strong);
+                para.appendChild(br);
+                para.appendChild(paraText);
+                content.appendChild(para);
+                media.appendChild(content);
+
+                span.appendChild(icon);
+                figure.appendChild(span);
+
+                if (agent !== "Instructions") {
+                    article.appendChild(figure);
+                };
+
+                article.appendChild(media);
+
+                return article;
+            }
+            document.getElementById("interact").addEventListener("submit", function(event){
+                event.preventDefault()
+                var text = document.getElementById("userInput").value;
+                if(text.trim() != ""){
+                  var userMessage = {
+                    data : text
+                  };
+                  document.getElementById('userInput').value = "";
+                  
+                  var parDiv = document.getElementById("parent"); 
+                  parDiv.append(createChatRow("You", text)); 
+                  parDiv.scrollTo(0, parDiv.scrollHeight);
+                  fetch('/postMessage/', {
+                      headers: new Headers({
+                        "content-type": "application/json"
+                      }),
+                      method: 'POST',
+                      body: JSON.stringify(userMessage)
+                  }).then(response=>response.json()).then(resp=>{
+                      // Change info for Model response
+                      if(resp.data == 'NoActiveSession')
+                      {
+                        window.location.href = "/"
+                      }
+                      parDiv.append(createChatRow("Nelly", resp.data.text));
+                      parDiv.scrollTo(0, parDiv.scrollHeight);
+                  })
+                }
+            });
+            document.getElementById("interact").addEventListener("reset", function(event){
+                event.preventDefault()
+                var text = document.getElementById("userInput").value;
+                document.getElementById('userInput').value = "";
+
+                fetch('/close/', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                }).then(data=>{
+                    childNodes = document.getElementsByClassName('child')
+                    while (childNodes.length>0) {  
+                      childNodes[0].parentNode.removeChild(childNodes[0]);
+                    }
+                })
+            });
+            var data = '{{data}}'
+            if(data.length === 2){
+              console.log("No history records")
+            }
+            else{
+            var parDiv = document.getElementById("parent"); 
+            data = data.replace('[','')
+            data = data.replace(']','')
+            data = data.replace(/}/g,'}}')
+            data = data.split('},')
+            for(i=0;i<data.length;i++){
+            if(i==data.length-1){
+              data[i] = data[i].replace('}}','}')
+            }
+            data[i] = JSON.parse(data[i].replace(/ &#39; /g,'\'').replace(/&#39;/g,'"').replace(/&#34;/g,'"'))
+            parDiv.append(createChatRow("You",data[i]["Message"])); 
+            parDiv.scrollTo(0, parDiv.scrollHeight);
+            parDiv.append(createChatRow("Nelly",data[i]["Response"]));
+            parDiv.scrollTo(0, parDiv.scrollHeight);
+            }
+            }
+        </script>
+    </body>
+</html>
