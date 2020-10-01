@@ -15,6 +15,7 @@
 
 ## b) Setup Instructions
 
+-   git clone this repository.
 -   Run: pip3 install -r requirements.txt in each of the 4 folders - Nelly_Core, Nelly-Data, nelly_auth and Nelly_Chat_Client
 
 #### 1) Model Core Changes
