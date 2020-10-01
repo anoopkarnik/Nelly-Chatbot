@@ -29,10 +29,13 @@
 -   Check in Nelly_Core/chat_service/websocket/sockets.py if server is '0.0.0.0' in open_method
 -   Check in Nelly_Core/chatstore.py change value of 'ChatStore' : 'http://0.0.0.0:8000' and 'AuthServer': '0.0.0.0:8080'
 
-#### 2) Model Chat Client Changes
+#### 2) Chat Client Changes
 ##### Production to local development
 -   In Chat_Client/src/Utility.py change value of 'ChatStore' : 'http://0.0.0.0:8000' and 'AuthServer': '0.0.0.0:8080'
 -   In Chat_Client/config.py change REDIRECT_URI = "http://localhost:5000/", SERVICE_ENDPOINT = "0.0.0.0", CORE_ENDPOINT ="0.0.0.0"
+
+#### 3) Auth Changes
+-   Last line in nelly_auth/services.py from serve(app,host='0.0.0.0',port=8080) to app.run(host='0.0.0.0',port=8080) 
 
 ## c) Running Instructions
     
