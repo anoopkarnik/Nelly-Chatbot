@@ -54,6 +54,7 @@ from utils.misc import AttrDict, warn_once
 from utils.thread import SharedTable
 from utils.torch import argsort, compute_grad_norm, padded_tensor
 from data.history import *
+from chat_service.websocket.sockets import * 
 
 class Batch(AttrDict):
     """
@@ -188,6 +189,7 @@ class History(object):
         p1_token='__p1__',
         p2_token='__p2__',
         dict_agent=None,
+        session_id=None,
     ):
         self.field = field
         self.dict = dict_agent
@@ -204,11 +206,9 @@ class History(object):
             raise RuntimeError('Type {} is not supported for history'.format(vec_type))
         self.vec_type = vec_type
         self.max_len = maxlen
-        f = open('/home/anoop/Downloads/TechnicalWork/Nelly_Dev_Branch/Nelly_Core/chat_service/websocket/sid.txt')
-        sid_data = json.load(f)
-        f.close()
-        self.session_id = str(sid_data['sid'])
-        self.historical_data = Historical_Data(self.session_id)
+        print('History class getting the history for session id: ' + str(session_id))
+        self.session_id = session_id
+        self.historical_data = Historical_Data(session_id)
         self.history_strings = self.historical_data.get_history_strings()
         self.history_raw_strings = self.historical_data.get_history_strings()
         self.history_vecs = [self.parse(x) for x in self.history_strings]
@@ -242,7 +242,7 @@ class History(object):
         self.history_strings.append(text)
         self.current_messages.append(text)
         if len(self.current_messages) == 2:
-            self.historical_data.store_history(self.session_id,self.current_messages[0],self.current_messages[1])
+            self.historical_data.store_history(self.session_id ,self.current_messages[0],self.current_messages[1])
             self.current_messages = []
 
     def _update_raw_strings(self, text):
@@ -772,6 +772,7 @@ class TorchAgent(ABC, Agent):
         label_truncate = opt.get('label_truncate') or opt['truncate']
         self.label_truncate = label_truncate if label_truncate >= 0 else None
         # stores up to hist_utt past observations within current dialog
+        print('Torch agent {} is fetching history for this session: {} '.format(self.__str__(), self.session_id))
         self.history = self.build_history()
 
         self.is_training = False  # track whether model is training
@@ -791,6 +792,7 @@ class TorchAgent(ABC, Agent):
             p1_token=self.P1_TOKEN,
             p2_token=self.P2_TOKEN,
             dict_agent=self.dict,
+            session_id = self.session_id,
         )
 
     def build_dictionary(self):

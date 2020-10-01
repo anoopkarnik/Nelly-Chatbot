@@ -59,7 +59,6 @@ def get_token(url,data):
 def index(createNesSessionId = False):
     sessionId = None 
     results_list = []
-    res={}
     if (createNesSessionId == False and 'sessionId' in request.cookies):
         sessionId = request.cookies['sessionId']
     cognitoAuthDomain = app.config['COGNITO_AUTHDOMAIN']
@@ -94,8 +93,11 @@ def index(createNesSessionId = False):
                     user_info_data = json.dumps({'session_id':sessionId,'customer_email':customer_email,'id_token':id_token,'access_token':access_token,'user_uuid':user_uuid},sort_keys=True,separators=(',', ': '))
                     SESSION['access_token'].update({ sessionId: sessionId }) 
                     save_user_details(customer_email,sessionId,user_info_data,headers,server,port)
-                    for item in GetChat(sessionId):
-                        results_list.append({"Message":item["Message"],"Response":item["Response"]})
+                    chat_response = GetChat(sessionId)
+                    if chat_response is not None:
+                        for data in chat_response:
+                            for messages in data:
+                                results_list.append({"Message":messages["Message"],"Response":messages["Response"]})
                     _createNewSession(sessionId)    
                 elif response_text.status_code == 403:
                     refresh_response = get_token('{}/oauth2/token'.format(cognitoAuthDomain),refresh_info)
@@ -114,8 +116,10 @@ def index(createNesSessionId = False):
                             user_info_refresh_data = json.dumps({'session_id':sessionId,'customer_email':customer_email,'id_token':id_token,'access_token':access_token,'user_uuid':user_uuid},sort_keys=True,separators=(',', ': '))
                             SESSION['access_token'].update({ sessionId: sessionId })
                             save_user_details(customer_email,sessionId,user_info_refresh_data,headers,server,port)
-                            for item in GetChat(sessionId):
-                                results_list.append({"Message":item["Message"],"Response":item["Response"]})
+                            chat_response = GetChat(sessionId)
+                            if chat_response is not None:
+                                for  item in chat_response:
+                                    results_list.append({"Message":item["Message"],"Response":item["Response"]})
                             _createNewSession(sessionId)
                         else:
                             return response_text.json()["message"]
@@ -127,7 +131,12 @@ def index(createNesSessionId = False):
         except Exception as e:
             print('Failed to get the token: '+ str(e))  
             #TODO: show error page?
-    
+    else:
+         chat_response = GetChat(sessionId)
+         if chat_response is not None:
+            for data in chat_response:
+                for messages in data:
+                    results_list.append({"Message":messages["Message"],"Response":messages["Response"]})
     response = make_response(render_template('index.html',data=results_list))
     response.set_cookie("sessionId", sessionId)
     return  response

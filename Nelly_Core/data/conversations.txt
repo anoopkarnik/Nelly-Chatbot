@@ -1,1 +1,0 @@
-{"1": ["Hey", "hi , how are you today ? i just got back from a long day of work , how about you ?", "hello", "what do you like to do in your spare time ? i ' m just getting back from work.", "Please work", "do you have any hobbies ? i like to read , play video games , and watch netflix"]}

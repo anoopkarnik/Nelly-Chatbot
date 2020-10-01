@@ -14,6 +14,8 @@ class WebsocketAgent(ChatServiceAgent):
     """
 
     def __init__(self, opt, manager, receiver_id, task_id):
+        print("WebSocketAgent receiverID is : " + receiver_id)
+        self.session_id = receiver_id
         super().__init__(opt, manager, receiver_id, task_id)
         self.message_partners = []
         self.action_id = 1

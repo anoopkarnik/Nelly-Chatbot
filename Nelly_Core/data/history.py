@@ -9,9 +9,11 @@ class Historical_Data():
 
     def get_history_strings(self):
         output=[]
-        for message in self.data: 
-            output.append(message.get('Message'))
-            output.append(message.get('Response'))
+        if self.data is not None:
+            for message_list in self.data:
+                for message in message_list:
+                    output.append(message.get('Message'))
+                    output.append(message.get('Response'))
         return output
 
     def store_history(self,session_id,Message,Response):

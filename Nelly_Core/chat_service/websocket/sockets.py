@@ -18,6 +18,9 @@ def get_rand_id():
 
 T = TypeVar('T', bound='MessageSocketHandler')
 
+class SessionID:
+    sid = str('wrong sid')
+
 
 class MessageSocketHandler(WebSocketHandler):
     def __init__(self: T, *args, **kwargs):
@@ -28,20 +31,19 @@ class MessageSocketHandler(WebSocketHandler):
         logging.info("starting message socket handler")
         self.message_callback = kwargs.pop('message_callback', _default_callback)
         super().__init__(*args, **kwargs)
-        
+        self.sid = None
         
     def open(self):
         """
         Opens a websocket and assigns a random UUID that is stored in the class-level
         `subs` variable.
         """
-        server = "localhost"
+#         server = "10.0.1.161"
+        server = "0.0.0.0"
         port = 8080
         headers = (self.request.headers).get("Authorization")
-        sid = str(headers).partition(' ')[2]
-        f = open('/home/anoop/Downloads/TechnicalWork/Nelly_Dev_Branch/Nelly_Core/chat_service/websocket/sid.txt','w')
-        json.dump({'sid':sid},f)
-        f.close()
+        sid = headers.partition(' ')[2]
+        self.sid = sid
         response_text = requests.get('http://{}:{}/validate_sessionId'.format(server,port),headers={'session_id':sid})
         if response_text.status_code == 200:
             self.sid = response_text.json()["data"]["session_id"]
@@ -51,8 +53,13 @@ class MessageSocketHandler(WebSocketHandler):
                 logging.info(f"Opened new socket from ip: {self.request.remote_ip}")
                 logging.info(f"Current subscribers: {self.subs}")
         else:
-            logging.error("Cannot Verify Session ID")
-            return "Cannot Verify Session ID"
+            #logging.error("Cannot Verify Session ID")
+            self.sid = sid
+            if self.sid not in self.subs.values():
+                self.subs[self.sid] = self    
+                self.set_nodelay(True)
+                logging.info(f"Opened new socket from ip: {self.request.remote_ip}")
+                logging.info(f"Current subscribers: {self.subs}")
         
 
     def on_close(self):
@@ -74,13 +81,16 @@ class MessageSocketHandler(WebSocketHandler):
         """
         logging.info('websocket message from client: {}'.format(message_text))
         message = json.loads(message_text)
-        message = {
-            'text': message.get('text', ''),
-            'payload': message.get('payload'),
-            'sender': {'id': self.sid},
-            'recipient': {'id': 0},
-        }
-        self.message_callback(message)
+        if self.sid is not None:
+            message = {
+                'text': message.get('text', ''),
+                'payload': message.get('payload'),
+                'sender': {'id': self.sid},
+                'recipient': {'id': 0},
+            }
+            self.message_callback(message)
+        else:
+            logging.error("No response from Nelly as the session ID is invalid")
 
     def check_origin(self, origin):
         return True

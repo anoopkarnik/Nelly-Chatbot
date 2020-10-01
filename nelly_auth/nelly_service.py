@@ -155,18 +155,18 @@ def validate_sessionId():
     try:
         session_id = request.headers.get('session_id')
         cur = mysql.connection.cursor()
-        query_string = "select * from user where session_id = %s and delete_flag = 0"
+        query_string = "select * from user where delete_flag = 0 and session_id=%s"
         cur.execute(query_string,(session_id,))
-        user_list = [list(user) for user in cur.fetchall()]
+        user_list = cur.fetchone()
         if not user_list:
             logger.debug("No data in database with given session Id")
-            return make_response(jsonify(message="No data in database with given session Id"),400)
+            return make_response(jsonify(message="No data in database with given session Id"),404)
         else:
-            session_id = user_list[0][1]
+            session_id = user_list[1]
             return make_response(jsonify(message="Valid Session Id",data={"session_id":session_id}),200)
     except:
         traceback.print_exc(file=sys.stdout)
-
+        
 @app.route('/get_sessionId')
 def get_sessionId():
     try:
@@ -182,18 +182,18 @@ def get_sessionId():
         customer_email = cur.fetchone()
         if customer_email is None:
             logger.debug("No data in database with given session Id")
-            return make_response(jsonify(message="No data in database with given session Id"),400)
+            return make_response(jsonify(message="No data in database with given session Id"),404)
         else:
-            query_string = "select session_id from user where customer_email = %s order by created_date"
+            query_string = "select session_id from user where customer_email = %s order by created_date desc"
             cur.execute(query_string,(customer_email,))
             for session in cur.fetchall():
                 sessions_list.append(session[0])
             if not sessions_list:
                 logger.debug("No sessions list with given customer_email")
-                return make_response(jsonify(message="No sessions list with given customer_email"),400)
+                return make_response(jsonify(message="No sessions list with given customer_email"),404)
             else:
-                for records in range(len(sessions_list)-1-records_number,len(sessions_list)-1):
-                    sessionid_list.extend(sessions_list[records])
+                for records in range(0,records_number):
+                    sessionid_list.append(sessions_list[records])
                 return make_response(jsonify(message="Sessions List",data={"session_list":sessionid_list}),200)      
     except:
         traceback.print_exc(file=sys.stdout)
