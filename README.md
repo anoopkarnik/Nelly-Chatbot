@@ -34,9 +34,6 @@
 -   In Chat_Client/src/Utility.py change value of 'ChatStore' : 'http://0.0.0.0:8000' and 'AuthServer': '0.0.0.0:8080'
 -   In Chat_Client/config.py change REDIRECT_URI = "http://localhost:5000/", SERVICE_ENDPOINT = "0.0.0.0", CORE_ENDPOINT ="0.0.0.0"
 
-#### 3) Auth Changes
--   Last line in nelly_auth/services.py from serve(app,host='0.0.0.0',port=8080) to app.run(host='0.0.0.0',port=8080) 
-
 ## c) Running Instructions
     
 #### 1) In first terminal to run the server 
