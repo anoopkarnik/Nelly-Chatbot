@@ -38,8 +38,8 @@ class MessageSocketHandler(WebSocketHandler):
         Opens a websocket and assigns a random UUID that is stored in the class-level
         `subs` variable.
         """
-#         server = "10.0.1.161"
-        server = "0.0.0.0"
+        #server = "10.0.1.161"
+        server = '0.0.0.0'
         port = 8080
         headers = (self.request.headers).get("Authorization")
         sid = headers.partition(' ')[2]

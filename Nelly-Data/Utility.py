@@ -3,6 +3,7 @@ import requests
 import nltk
 import threading
 from bson.json_util import dumps
+from bson.objectid import ObjectId
 from openie import StanfordOpenIE
 from transformers import pipeline
 #nltk.download('punkt')
@@ -12,8 +13,8 @@ def InvokeOpenIE(*params):
     with StanfordOpenIE() as client:
         return client.annotate(params[0])
 
-def InvokeEmotions(data):
-    data = [data]
+def InvokeEmotions(message):
+    data = [message]
     emotion_labels = ['neutral','joy','sadness', 'anger', 'fear', 'surprise','disgust']
     new_data=[]
     for text in data:
@@ -33,7 +34,7 @@ def InvokeEmotions(data):
     return json.dumps(output),json.dumps(output_raw)
 
 def GetJson(data,RemoveNone=True):
-    jsonValue = json.dumps(data, default=lambda o: o.__dict__,sort_keys=True, indent=4)
+    jsonValue = dumps(data.__dict__,default=lambda o: o.__dict__,indent=4)#, default=lambda o: o.__dict__,sort_keys=True, indent=4)
     if RemoveNone == True:
         jsonValue = RemoveNull(json.loads(jsonValue))
     return jsonValue
@@ -43,7 +44,7 @@ def RemoveNull(d):
         if value is None:
             del d[key]
         elif isinstance(value, dict):
-            del_none(value)
+            RemoveNull(value)
     return d
 
 def InvokeGet(Url,data):
@@ -61,7 +62,6 @@ def InvokeGetAsync(Url,data):
 def InvokePostAsync(Url,data):
     thrSave = threading.Thread(target=InvokePost,args=(Url,data))
     thrSave.start()
-
     
 
 

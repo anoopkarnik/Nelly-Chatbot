@@ -2,26 +2,27 @@ import Config
 import pymongo
 from pymongo.collection import ReturnDocument
 from Utility import *
-
-#class NellyStore(object):
+from bson.objectid import ObjectId
 
 def get_db():
-        constring = "mongodb+srv://{0}:{1}@{2}/{3}?retryWrites=true&w=majority"
-        client = pymongo.MongoClient(constring.format(
-            Config.DATABASE_CONFIG['UserName'],
-            Config.DATABASE_CONFIG['Password'],
-            Config.DATABASE_CONFIG['Host'],
-            Config.DATABASE_CONFIG['DBName']
-            ))
+        client = pymongo.MongoClient(Config.DATABASE_CONFIG['Host'])
         return client[Config.DATABASE_CONFIG['Collection']]
 
 def get_data_coll():
-        dbclient = get_db()
-        return dbclient[Config.DATABASE_CONFIG['ChatData']]
+    dbclient = get_db()
+    return dbclient[Config.DATABASE_CONFIG['ChatData']]
 
 def get_seq_coll():
-        dbclient = get_db()
-        return dbclient[Config.DATABASE_CONFIG['Sequence']]
+    dbclient = get_db()
+    return dbclient[Config.DATABASE_CONFIG['Sequence']]
+
+def get_IRES_coll():
+    dbclient = get_db()
+    return dbclient[Config.DATABASE_CONFIG['IRESData']]
+
+def get_Emotional_coll():
+    dbclient = get_db()
+    return dbclient[Config.DATABASE_CONFIG['EmotionalData']]
 
 def getsequence_nextval(seqName):
     seqdb = get_seq_coll()
@@ -34,22 +35,59 @@ def getsequence_nextval(seqName):
     )
     return int(doc['id'])
 
-
 def InsertOne(db,data):
-    return db.insert_one(data.MyJson()).inserted_id
+    json_data = data.MyJson()
+    return db.insert_one(json_data).inserted_id
 
 def UpdateOne(db,data):
-    from bson.objectid import ObjectId
-    _idValue =data.__dict__.get('_id')
     jsonValue =data.MyJson()
+    _idValue =str(data.__dict__.get('_id'))
     del jsonValue['_id']
     db.find_one_and_update(            
     {"_id" : ObjectId(_idValue)},
     {"$set": jsonValue },upsert=True)
     return _idValue
 
-def __InsertMany(self,db,data):
-    db.insert_many(data)
 
-def __UpdateMany(self,db,data):
-    db.update_many(data)
+def db_getChatBySession(SessionID):
+    _db = get_data_coll()
+    #result = _db.find({'SessionID':id})
+    #chatlist = [chat for chat in result]
+    #return chatlist
+    return list(_db.find({'SessionID':SessionID}))
+
+def db_getIRESBySession(SessionID):
+    _db = get_IRES_coll()
+    return list(_db.find({'SessionID':SessionID}))
+
+def db_getEmotionBySession(SessionID):
+    _db = get_Emotional_coll()
+    return list(_db.find({'SessionID':SessionID}))
+
+def db_getChatByID(_id):
+    _db = get_data_coll()
+    return _db.find_one({'_id':ObjectId(_id)})
+
+def db_getIRESByID(_id):
+    _db = get_IRES_coll()
+    return _db.find_one({'_id':ObjectId(_id)})
+
+def db_getEmotionByID(_id):
+    _db = get_Emotional_coll()
+    return _db.find_one({'_id':ObjectId(_id)})
+
+
+#def getChatIRES(SessionID, Message:str,Version:str,Type:str):
+#    _db=get_IRES_coll()
+#    return _db.find_one({'$and': 
+#                         [{'SessionID':self.SessionID},
+#                          {'Version':Version},
+#                          {'Type':Type}]})
+# return _db.find({'SessionID':SessionID},{ "_id": 1, "Message": 1, "Response": 1 })
+
+#def getChatEmotion(SessionID:str, Message:str,Version:str,Type:str):
+#    _db=get_Emotional_coll()
+#    return _db.find_one({'$and': 
+#                         [{'SessionID':self.SessionID},
+#                          {'Version':Version},
+#                          {'Type':Type}]})

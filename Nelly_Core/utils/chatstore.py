@@ -2,12 +2,12 @@ import requests
 import json 
 
 API_Server = {
-    #'ChatStore' : 'http://3.135.101.28:8000',
+    #'ChatStore' : 'http://3.20.182.221:8000',
     #'AuthServer': '3.135.101.28:8080'
-#     'ChatStore' : 'http://10.0.1.161:8000',
-#     'AuthServer': '10.0.1.161:8080',
-    'ChatStore' : 'http://0.0.0.0:8000',
-    'AuthServer': '0.0.0.0:8080'
+    #'ChatStore' : 'http://172.26.13.187:8000',
+    #'AuthServer': '10.0.1.161:8080',
+    'ChatStore' : 'http://0.0.0.0:8001',
+    'AuthServer' : '0.0.0.0:8080'
     }
 
 def SaveChat(SessionID,Message,Response):
@@ -28,7 +28,8 @@ def GetChat(SessionID):
     sessions_list = []
     try:
         if len(prevSessionList) != 0:
-            for sessionId in range(len(prevSessionList),0,-1):
+            for value in range(len(prevSessionList)-1,-1,-1):
+                sessionId = prevSessionList[value]
                 Url = API_Server['ChatStore'] + '/{0}'
                 Url = Url.format(sessionId)
                 print('Sending request to get chat for previous session id: '+str(sessionId))
@@ -45,7 +46,7 @@ def GetChat(SessionID):
 def GetPreviousSessionID(sessionId):
     headers = {'Content-type': 'application/json'} 
     try:
-        session_info = json.dumps({'sessionId':sessionId,'records_number':2},sort_keys=True,separators=(',', ': '))
+        session_info = json.dumps({'sessionId':sessionId,'records_number':5},sort_keys=True,separators=(',', ': '))
         print('trying to get previous session id from current session : ' + str(session_info))
         response_text = requests.get('http://{}/get_sessionId'.format(API_Server['AuthServer']),json=session_info,headers=headers)
         if response_text.status_code == 200:

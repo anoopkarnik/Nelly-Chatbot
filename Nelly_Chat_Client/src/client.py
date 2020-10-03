@@ -1,7 +1,7 @@
 import requests,json, threading,uuid, websocket, os, sys, traceback, urllib.request, datetime, time
 from flask import Flask, render_template,request, make_response, jsonify, redirect, Blueprint, current_app as app
 import jwt 
-from src.Utility import GetChat
+from src.Utility import GetChatHistory
 from waitress import serve
 from http import cookies    
 
@@ -93,9 +93,9 @@ def index(createNesSessionId = False):
                     user_info_data = json.dumps({'session_id':sessionId,'customer_email':customer_email,'id_token':id_token,'access_token':access_token,'user_uuid':user_uuid},sort_keys=True,separators=(',', ': '))
                     SESSION['access_token'].update({ sessionId: sessionId }) 
                     save_user_details(customer_email,sessionId,user_info_data,headers,server,port)
-                    chat_response = GetChat(sessionId)
-                    if chat_response is not None:
-                        for data in chat_response:
+                    history = GetChatHistory(sessionId)
+                    if history is not None:
+                        for data in history:
                             for messages in data:
                                 results_list.append({"Message":messages["Message"],"Response":messages["Response"]})
                     _createNewSession(sessionId)    
@@ -116,9 +116,9 @@ def index(createNesSessionId = False):
                             user_info_refresh_data = json.dumps({'session_id':sessionId,'customer_email':customer_email,'id_token':id_token,'access_token':access_token,'user_uuid':user_uuid},sort_keys=True,separators=(',', ': '))
                             SESSION['access_token'].update({ sessionId: sessionId })
                             save_user_details(customer_email,sessionId,user_info_refresh_data,headers,server,port)
-                            chat_response = GetChat(sessionId)
-                            if chat_response is not None:
-                                for  item in chat_response:
+                            history = GetChatHistory(sessionId)
+                            if history is not None:
+                                for  item in history:
                                     results_list.append({"Message":item["Message"],"Response":item["Response"]})
                             _createNewSession(sessionId)
                         else:
@@ -132,9 +132,9 @@ def index(createNesSessionId = False):
             print('Failed to get the token: '+ str(e))  
             #TODO: show error page?
     else:
-         chat_response = GetChat(sessionId)
-         if chat_response is not None:
-            for data in chat_response:
+         history = GetChatHistory(sessionId)
+         if history is not None:
+            for data in history:
                 for messages in data:
                     results_list.append({"Message":messages["Message"],"Response":messages["Response"]})
     response = make_response(render_template('index.html',data=results_list))

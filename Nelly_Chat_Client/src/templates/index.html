@@ -3,6 +3,14 @@
     <link rel="stylesheet" href="{{url_for('static', filename ='css/main.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.css">
     <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <style>
+    .nelly-icon{
+    background-image:url("../static/images/nelly.png");
+    height:37px;
+    width:37px;
+    display: block;
+    }
+    </style>
     </head>
     <body>
         <div class="columns" style="height: 100%">
@@ -46,15 +54,12 @@
 
                 var figure = document.createElement("figure");
                 figure.className = "media-left";
-                
-                var fig_right = document.createElement("figure");
-                fig_right.className = "media-right";
 
                 var span = document.createElement("span");
                 span.className = "icon is-large";
 
                 var icon = document.createElement("i");
-                icon.className = "fas fas fa-2x" + (agent === "You" ? " fa-user " : agent === "Nelly" ? " fa-robot" : "");
+                icon.className = (agent === "You" ? "fas fas fa-2x fa-user" : agent === "Nelly" ? "nelly-icon" : "");
 
                 var media = document.createElement("div");
                 media.className = "media-content";
@@ -65,12 +70,6 @@
                 var para = document.createElement("p");
                 var paraText = document.createTextNode(text);
 
-                var strong = document.createElement("strong");
-                strong.innerHTML = agent;
-                var br = document.createElement("br");
-
-                para.appendChild(strong);
-                para.appendChild(br);
                 para.appendChild(paraText);
                 content.appendChild(para);
                 media.appendChild(content);
@@ -78,16 +77,19 @@
                 span.appendChild(icon);
                 figure.appendChild(span);
 
-                if (agent !== "Instructions" && agent!== "You") {
+                if (agent !== "Instructions") {
                     article.appendChild(figure);
                 };
                 
-                if(agent == "You"){
-                   article.appendChild(fig_right); 
-                };
-
                 article.appendChild(media);
-
+                
+                if(agent==="You"){
+                  article.style.float="right";
+                };
+                if(agent==="Nelly"){
+                  article.style.float="left";
+                };
+                
                 return article;
             }
             document.getElementById("interact").addEventListener("submit", function(event){

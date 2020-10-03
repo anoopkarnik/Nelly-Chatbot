@@ -1,0 +1,349 @@
+{
+	"openapi": "3.0.2",
+	"info": {
+		"title": "Nelly Data Service",
+		"description": "Nelly Data Service description",
+		"version": "1.1.0"
+	},
+	"paths": {
+		"/{SessionID}": {
+			"get": {
+				"parameters": [
+					{
+						"name": "SessionID",
+						"in": "path",
+						"description": "Id of the session for which we need to fetch details",
+						"required": true,
+						"style": "simple",
+						"explode": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Session Chat Message",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ChatMessage"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"parameters": [
+					{
+						"name": "SessionID",
+						"in": "path",
+						"description": "Id of the session for which we needs to be saved",
+						"required": true,
+						"style": "simple",
+						"explode": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/x-www-form-urlencoded": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"Message": {
+										"type": "string",
+										"description": "User Message"
+									},
+									"Response": {
+										"type": "string",
+										"description": "Nelly Core Response"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ChatMessage"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Chat/{SessionID}": {
+			"get": {
+				"parameters": [
+					{
+						"name": "SessionID",
+						"in": "path",
+						"description": "Id of the session for which we need to fetch details",
+						"required": true,
+						"style": "simple",
+						"explode": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ChatMessage"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/IRES/{SessionID}": {
+			"get": {
+				"parameters": [
+					{
+						"name": "SessionID",
+						"in": "path",
+						"description": "Id of the session for which we need to fetch details",
+						"required": true,
+						"style": "simple",
+						"explode": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IRES"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/Emotion/{SessionID}": {
+			"get": {
+				"parameters": [
+					{
+						"name": "SessionID",
+						"in": "path",
+						"description": "Id of the session for which we need to fetch details",
+						"required": true,
+						"style": "simple",
+						"explode": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EMOTION"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"ChatMessage": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "object",
+							"properties": {
+								"$oid": {
+									"type": "string"
+								}
+							}
+						},
+						"SessionID": {
+							"type": "string"
+						},
+						"Message": {
+							"type": "string"
+						},
+						"Response": {
+							"type": "string"
+						},
+						"TimeStamp": {
+							"type": "string"
+						},
+						"Emotion_ID": {
+							"type": "string"
+						},
+						"IRES_ID": {
+							"type": "string"
+						}
+					},
+					"example": {
+						"_id": {
+							"$oid": "5f7625b312307e4d03e75e57"
+						},
+						"SessionID": "ABCD1234",
+						"Message": "Hello, I am happy fiddle is working",
+						"Response": "Dummy response from Code",
+						"TimeStamp": "2020-10-01 18:53:21.620031",
+						"Emotion_ID": "5f7625b312307e4d03e75e56",
+						"IRES_ID": "5f7625b312307e4d03e75e55"
+					}
+				}
+			},
+			"IRES": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "object",
+							"properties": {
+								"$oid": {
+									"type": "string"
+								}
+							}
+						},
+						"Message": {
+							"type": "string"
+						},
+						"SessionID": {
+							"type": "string"
+						},
+						"Version": {
+							"type": "string"
+						},
+						"Type": {
+							"type": "string"
+						},
+						"Data": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"subject": {
+										"type": "string"
+									},
+									"relation": {
+										"type": "string"
+									},
+									"object": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"example": {
+						"_id": {
+							"$oid": "5f7625b312307e4d03e75e55"
+						},
+						"Message": "Hello, I am happy fiddle is working",
+						"SessionID": "ABCD1234",
+						"Version": "IV-1",
+						"Type": "IT-1",
+						"Data": [
+							{
+								"subject": "I",
+								"relation": "am",
+								"object": "happy fiddle"
+							},
+							{
+								"subject": "I",
+								"relation": "am",
+								"object": "fiddle"
+							}
+						]
+					}
+				}
+			},
+			"EMOTION": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "object",
+							"properties": {
+								"$oid": {
+									"type": "string"
+								}
+							}
+						},
+						"Message": {
+							"type": "string"
+						},
+						"SessionID": {
+							"type": "string"
+						},
+						"Version": {
+							"type": "string"
+						},
+						"Type": {
+							"type": "string"
+						},
+						"Data": {
+							"type": "string"
+						},
+						"Data_Raw": {
+							"type": "string"
+						}
+					},
+					"example": {
+						"_id": {
+							"$oid": "5f7625b312307e4d03e75e56"
+						},
+						"Message": "Hello, I am happy fiddle is working",
+						"SessionID": "ABCD1234",
+						"Version": "EV-1",
+						"Type": "ET-1",
+						"Data": "[{\"message\": \"Hello, I am happy fiddle is working\", \"emotion\": \"joy\"}]",
+						"Data_Raw": "[{\"sequence\": \"Hello, I am happy fiddle is working\", \"labels\": [\"joy\", \"neutral\", \"surprise\", \"sadness\", \"anger\", \"disgust\", \"fear\"], \"scores\": [0.9074512720108032, 0.0452781617641449, 0.028005003929138184, 0.006271512247622013, 0.004963864106684923, 0.004293851088732481, 0.003736378625035286]}]"
+					}
+				}
+			}
+		},
+		"requestBodies": {
+			"Session": {
+				"description": "Save Schema for Session Data",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"Message": {
+									"type": "string"
+								},
+								"Response": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"required": true
+			}
+		}
+	}
+}

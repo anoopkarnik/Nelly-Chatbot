@@ -155,14 +155,14 @@ def validate_sessionId():
     try:
         session_id = request.headers.get('session_id')
         cur = mysql.connection.cursor()
-        query_string = "select * from user where delete_flag = 0 and session_id=%s"
+        query_string = "select session_id from user where delete_flag = 0 and session_id=%s"
         cur.execute(query_string,(session_id,))
         user_list = cur.fetchone()
         if not user_list:
             logger.debug("No data in database with given session Id")
             return make_response(jsonify(message="No data in database with given session Id"),404)
         else:
-            session_id = user_list[1]
+            session_id = user_list[0]
             return make_response(jsonify(message="Valid Session Id",data={"session_id":session_id}),200)
     except:
         traceback.print_exc(file=sys.stdout)
@@ -201,4 +201,4 @@ def get_sessionId():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    serve(app, host="0.0.0.0", port=8080)

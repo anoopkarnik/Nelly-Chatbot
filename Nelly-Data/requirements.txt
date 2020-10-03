@@ -1,7 +1,7 @@
+bson
 dnspython
+falcon
+stanford-openie
+nltk
 pymongo
 requests
-falcon
-nltk
-stanford-openie
-transformers

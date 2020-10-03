@@ -18,7 +18,7 @@
     "model": "transformer/generator",
     "model_file": "/home/anoop/Downloads/TechnicalWork/Nelly_latest/Nelly_Core/data/models/blender/blender_90M/model",
     "init_model": "/home/anoop/Downloads/TechnicalWork/Nelly_latest/Nelly_Core/data/models/blender/blender_90M/model",
-    "dict_class": "parlai.core.dict:DictionaryAgent",
+    "dict_class": "core.dict:DictionaryAgent",
     "evaltask": null,
     "eval_batchsize": null,
     "display_examples": false,

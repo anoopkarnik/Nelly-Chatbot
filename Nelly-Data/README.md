@@ -4,6 +4,10 @@ conda install pytorch torchvision cpuonly -c pytorch
 
 -   Run pip3 install -r requirements.txt
 
+## Running Application
+ 
+-   python NellyRoute.py
+
 ## Configuration Changes
 	Config.py
 
