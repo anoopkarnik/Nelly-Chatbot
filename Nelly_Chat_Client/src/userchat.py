@@ -3,7 +3,7 @@ import requests
 API_Server = {
     #'ChatStore' : 'http://127.0.0.1:8000'
 #     'ChatStore' : 'http://3.20.182.221:8000/'
-    'ChatStore' : 'http://0.0.0.0/'
+    'ChatStore' : 'http://0.0.0.0:8000/'
     }
 
 def SaveChat(SessionID,Message,Response):

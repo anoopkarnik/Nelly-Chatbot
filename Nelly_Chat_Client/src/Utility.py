@@ -1,13 +1,10 @@
 import requests
 import json 
+from config import Config
 
 API_Server = {
-#     'ChatStore' : 'http://3.20.182.221:8000',
-    #'AuthServer': '3.135.101.28:8080'
-    #'ChatStore' : 'http://172.26.13.187:8000',
-#     'AuthServer': '10.0.1.161:8080'
-    'ChatStore' : 'http://0.0.0.0:8001',
-    'AuthServer': '0.0.0.0:8080'
+    'ChatStore' : Config.ChatStore,
+    'AuthServer': Config.AuthServer
     }
 
 def SaveChat(SessionID,Message,Response):

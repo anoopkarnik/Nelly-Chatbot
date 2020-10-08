@@ -53,7 +53,7 @@ from utils.fp16 import (
 from utils.misc import AttrDict, warn_once
 from utils.thread import SharedTable
 from utils.torch import argsort, compute_grad_norm, padded_tensor
-from data.history import *
+from chat_service.core.history import *
 from chat_service.websocket.sockets import * 
 
 class Batch(AttrDict):

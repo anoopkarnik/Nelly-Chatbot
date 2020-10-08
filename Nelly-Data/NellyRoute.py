@@ -44,6 +44,6 @@ register_swaggerui_app(
 
 if __name__ == '__main__':
     _port =int(Config.Http_Config['Port'])
-    print('Please connect to the link: http://{}:{}/'.format('', _port))
+    print('Please connect to the link: http://{}:{}/'.format('0.0.0.0', _port))
     httpd = make_server('0.0.0.0',_port, cls)
     httpd.serve_forever()

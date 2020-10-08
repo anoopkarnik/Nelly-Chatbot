@@ -1,6 +1,6 @@
 # config.py
 Http_Config = {
-    'Port':'8001'
+    'Port':'8000'
     }
 
 DATABASE_CONFIG = {

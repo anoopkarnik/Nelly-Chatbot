@@ -9,6 +9,7 @@ import requests
 import logging
 import uuid
 from typing import Dict, TypeVar
+from config import Config
 
 from tornado.websocket import WebSocketHandler
 
@@ -38,8 +39,7 @@ class MessageSocketHandler(WebSocketHandler):
         Opens a websocket and assigns a random UUID that is stored in the class-level
         `subs` variable.
         """
-        #server = "10.0.1.161"
-        server = '0.0.0.0'
+        server = Config.Server
         port = 8080
         headers = (self.request.headers).get("Authorization")
         sid = headers.partition(' ')[2]

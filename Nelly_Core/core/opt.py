@@ -14,6 +14,7 @@ import pickle
 import traceback
 
 from typing import List
+from config import Config
 
 # these keys are automatically removed upon save. This is a rather blunt hammer.
 # It's preferred you indicate this at option definiton time.
@@ -123,6 +124,14 @@ class Opt(dict):
             # try json first
             with open(optfile, 'r') as t_handle:
                 dct = json.load(t_handle)
+                dct['download_path'] = Config.Core_Location + 'data/downloads'
+                dct['datapath'] = Config.Core_Location + 'data'
+                dct['model_file'] = Config.Core_Location + 'data/models/blender/blender_90M/model'
+                dct['init_model'] = Config.Core_Location + 'data/models/blender/blender_90M/model'
+                dct['dict_file'] = Config.Core_Location + 'data/models/blender/blender_90M/model.dict'
+                dct['override']['model_file'] = Config.Core_Location + 'data/models/blender/blender_90M/model'
+                dct['override']['init_model'] = Config.Core_Location + 'data/models/blender/blender_90M/model'
+                dct['override']['dict_file'] = Config.Core_Location + 'data/models/blender/blender_90M/model.dict'
         except UnicodeDecodeError:
             # oops it's pickled
             with open(optfile, 'rb') as b_handle:
