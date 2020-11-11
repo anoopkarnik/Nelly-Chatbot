@@ -10,9 +10,17 @@
     width:37px;
     display: block;
     }
+   .vertical-center {
+   margin:auto;
+   float:right;
+   }
     </style>
     </head>
     <body>
+	<div class="container">
+	<div class="vertical-center text-center">
+	<button id="logout" style="background-color:d8efc5;color:black;border-color:black;text-align:center;width:200px;height:50px;" onclick="onLogout()">LOGOUT</button></div>
+	</div>
         <div class="columns" style="height: 100%">
             <div class="chatWindow">
               <section style="height: 100%">
@@ -21,7 +29,7 @@
                       <div>
                          <div>
                           <img src="{{url_for('static', filename='images/NellyIcon.png')}}" style="width: .84in; height: .48in;display: block;
-                           margin: left;"/> 
+                           margin: left;"/>
                         </div>
                       </div>
                     </article>
@@ -48,6 +56,33 @@
         </div>
 
         <script>
+
+	    function formatDate(){
+            var d = new Date()
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+            if (month.length < 2)
+        	month = '0' + month;
+    	    if (day.length < 2)
+        	day = '0' + day;
+	    return [year, month, day].join('-')
+	    }
+            function isHTML(str) {
+             var a = document.createElement('div');
+             a.innerHTML = str;
+             for (var c = a.childNodes, i = c.length; i--; ) {
+             if (c[i].nodeType == 1) return true;
+             }
+             return false;
+             }
+
+	     function isImg(str){
+        if(str.endsWith(".gif"))
+          return true
+        else
+          return false
+        }
             function createChatRow(agent, text) {
                 var article = document.createElement("article");
                 article.className = "media child" + (agent === "You" ? " userMessage " : agent === "Nelly" ? " NellyMessage" : "");
@@ -68,29 +103,54 @@
                 content.className = "content";
 
                 var para = document.createElement("p");
+                if(isHTML(text) === true){
+                para.innerHTML = text
+                }
+		if(isImg(text) === true){
+		  text = text.replace(/"/g,"")
+		  link_address = "url("+text+")"
+		  para.style.backgroundImage = link_address
+		  replaced_val = para.style.backgroundImage.replace('("','(')
+		  para.style.backgroundImage = replaced_val.replace('")',')')
+		}
+                else{
                 var paraText = document.createTextNode(text);
-
                 para.appendChild(paraText);
+                }
                 content.appendChild(para);
                 media.appendChild(content);
-
                 span.appendChild(icon);
                 figure.appendChild(span);
 
                 if (agent !== "Instructions") {
                     article.appendChild(figure);
                 };
-                
                 article.appendChild(media);
-                
+
                 if(agent==="You"){
                   article.style.float="right";
                 };
                 if(agent==="Nelly"){
                   article.style.float="left";
                 };
-                
+
                 return article;
+            }
+	    function setChatRow(article,text){
+	     var children_length = article.children;
+	     var paraText = document.createTextNode(text);
+             children_length[article.children.length-1].append(paraText)
+	     return article
+	    }
+            function onLogout(){
+            fetch('/logout/', {
+                      headers: new Headers({
+                        "content-type": "application/json"
+                      }),
+                      method: 'GET',
+                  }).then(response=>response.json()).then(resp=>{
+		  window.location.href = resp.data
+            })
             }
             document.getElementById("interact").addEventListener("submit", function(event){
                 event.preventDefault()
@@ -100,11 +160,16 @@
                     data : text
                   };
                   document.getElementById('userInput').value = "";
-                  
-                  var parDiv = document.getElementById("parent"); 
-                  parDiv.append(createChatRow("You", text)); 
+
+                  var parDiv = document.getElementById("parent");
+		  var date_info_user = document.createElement("p")
+	    	  date_info_user.innerHTML = new Date();
+                  parDiv.append(createChatRow("You", text));
                   parDiv.scrollTo(0, parDiv.scrollHeight);
-                  fetch('/postMessage/', {
+		  date_info_user.style.float = "right"
+		  parDiv.append(date_info_user)
+		  parDiv.scrollTo(0, parDiv.scrollHeight);
+		   fetch('/postMessage/', {
                       headers: new Headers({
                         "content-type": "application/json"
                       }),
@@ -112,12 +177,20 @@
                       body: JSON.stringify(userMessage)
                   }).then(response=>response.json()).then(resp=>{
                       // Change info for Model response
-                      if(resp.data == 'NoActiveSession')
+                      if(resp.data == 'NoActiveSession / Session closed')
                       {
                         window.location.href = "/"
                       }
-                      parDiv.append(createChatRow("Nelly", resp.data.text));
-                      parDiv.scrollTo(0, parDiv.scrollHeight);
+                      else
+                      {
+                        var date_info_nelly = document.createElement("p")
+                            date_info_nelly.innerHTML = new Date();
+                            parDiv.append(createChatRow("Nelly", resp.data.text.text));
+                                    parDiv.scrollTo(0, parDiv.scrollHeight);
+                        date_info_nelly.style.float = "left"
+                        parDiv.append(date_info_nelly)
+                        parDiv.scrollTo(0, parDiv.scrollHeight);
+                      }
                   })
                 }
             });
@@ -133,17 +206,21 @@
                     method: 'POST',
                 }).then(data=>{
                     childNodes = document.getElementsByClassName('child')
-                    while (childNodes.length>0) {  
+                    while (childNodes.length>0) {
                       childNodes[0].parentNode.removeChild(childNodes[0]);
                     }
                 })
             });
             var data = '{{data}}'
-            if(data.length === 2){
+            var feedback_link = "Click here to provide us your feedback by filling the survey"
+            var result = feedback_link.link("https://docs.google.com/forms/d/1Ld6J74RTZl9zvmk4muq28BLfF7FLq9lMwsrHNnFZtqQ")
+            var parser = new DOMParser();
+	        var doc = parser.parseFromString(result, 'text/html');
+            if(data.length<=2){
               console.log("No history records")
             }
             else{
-            var parDiv = document.getElementById("parent"); 
+            var parDiv = document.getElementById("parent");
             data = data.replace('[','')
             data = data.replace(']','')
             data = data.replace(/}/g,'}}')
@@ -153,11 +230,15 @@
               data[i] = data[i].replace('}}','}')
             }
             data[i] = JSON.parse(data[i].replace(/ &#39; /g,'\'').replace(/&#39;/g,'"').replace(/&#34;/g,'"'))
-            parDiv.append(createChatRow("You",data[i]["Message"])); 
+            parDiv.append(createChatRow("You",data[i]["Message"]));
             parDiv.scrollTo(0, parDiv.scrollHeight);
             parDiv.append(createChatRow("Nelly",data[i]["Response"]));
             parDiv.scrollTo(0, parDiv.scrollHeight);
             }
+            }
+            if(data.length>=25){
+            parDiv.append(createChatRow("Nelly",doc.body.innerHTML));
+            parDiv.scrollTo(0, parDiv.scrollHeight);
             }
         </script>
     </body>

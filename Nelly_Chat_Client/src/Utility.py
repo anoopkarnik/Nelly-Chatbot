@@ -20,8 +20,8 @@ def SaveChat(SessionID,Message,Response):
     except BaseException as e:
         print(e)
 
-def GetChatHistory(SessionID):
-    prevSessionList=GetPreviousSessionID(SessionID)
+def GetChatHistory(SessionId,isHistory):
+    prevSessionList=GetPreviousSessionId(SessionId,isHistory)
     sessions_list = []
     try:
         if prevSessionList is not None and len(prevSessionList) != 0:
@@ -30,9 +30,9 @@ def GetChatHistory(SessionID):
                 response = getChat(prevSessionId)
                 sessions_list.append(response.json())
         else:
-            print('previous session is EMPTY for session id :' + str(SessionID))
+            print('previous session is EMPTY for session id :' + str(SessionId))
             print('getting history from current session')
-            response = getChat(SessionID)
+            response = getChat(SessionId)
             sessions_list.append(response.json())
     except BaseException as e:
         print(e)
@@ -46,10 +46,10 @@ def getChat(sessionId):
     print('Received response for the get chat request: ' + str(response.json()))
     return response
 
-def GetPreviousSessionID(sessionId):
+def GetPreviousSessionId(sessionId,isHistory):
     headers = {'Content-type': 'application/json'} 
     try:
-        session_info = json.dumps({'sessionId' : sessionId, 'records_number': 5}, sort_keys=True,separators=(',', ': '))
+        session_info = json.dumps({'sessionId' : sessionId, 'records_number': 5, 'history' : isHistory}, sort_keys=True,separators=(',', ': '))
         print('trying to get previous session id from current session : ' + str(session_info))
         response_text = requests.get('http://{}/get_sessionId'.format(API_Server['AuthServer']), json=session_info, headers = headers)
         if response_text.status_code == 200:

@@ -1,0 +1,42 @@
+<html>
+<body>
+  <div id="parent"></div>
+<script>
+function createChatRow(agent, text) {
+   var div_ele = document.createElement("div")
+   var para_ele = document.createElement("p");
+   para_ele.innerHTML = agent;
+   var content = document.createElement("p");
+   content.innerHTML = text;
+   div_ele.innerHTML+=para_ele.outerHTML+content.outerHTML;
+   return div_ele
+}
+function decodeHtml(html) {
+	var txt = document.createElement('textarea');
+	txt.innerHTML = html;
+	return txt.value;
+};
+var data = '{{data}}'
+if(data.length<=2){
+console.log("No history records")
+}
+else{
+var parDiv = document.getElementById("parent");
+data = data.replace('[','')
+data = data.replace(']','')
+data = data.replace(/}/g,'}}')
+data = data.split('},')
+for(i=0;i<data.length;i++){
+if(i==data.length-1){
+    data[i] = data[i].replace('}}','}')
+}
+data[i] = JSON.parse(decodeHtml(data[i]))
+parDiv.append(createChatRow("You",data[i]["Message"]));
+parDiv.scrollTo(0, parDiv.scrollHeight);
+parDiv.append(createChatRow("Nelly",data[i]["Response"]));
+parDiv.scrollTo(0, parDiv.scrollHeight);
+}
+}
+</script>
+</body>
+</html>
