@@ -66,9 +66,10 @@
         	month = '0' + month;
     	    if (day.length < 2)
         	day = '0' + day;
-	    return [year, month, day].join('-')
-	    }
-            function isHTML(str) {
+	        return [year, month, day].join('-')
+	        }
+
+	    function isHTML(str) {
              var a = document.createElement('div');
              a.innerHTML = str;
              for (var c = a.childNodes, i = c.length; i--; ) {
@@ -77,166 +78,174 @@
              return false;
              }
 
-	     function isImg(str){
-        if(str.endsWith(".gif"))
-          return true
-        else
-          return false
-        }
-            function createChatRow(agent, text) {
-                var article = document.createElement("article");
-                article.className = "media child" + (agent === "You" ? " userMessage " : agent === "Nelly" ? " NellyMessage" : "");
+	    function isImg(str){
+	        if(str.endsWith(".gif"))
+                return true
+            else
+                return false
+            }
 
-                var figure = document.createElement("figure");
-                figure.className = "media-left";
+        function createChatRow(agent, text) {
+            var article = document.createElement("article");
+            article.className = "media child" + (agent === "You" ? " userMessage " : agent === "Nelly" ? " NellyMessage" : "");
 
-                var span = document.createElement("span");
-                span.className = "icon is-large";
+            var figure = document.createElement("figure");
+            figure.className = "media-left";
 
-                var icon = document.createElement("i");
-                icon.className = (agent === "You" ? "fas fas fa-2x fa-user" : agent === "Nelly" ? "nelly-icon" : "");
+            var span = document.createElement("span");
+            span.className = "icon is-large";
 
-                var media = document.createElement("div");
-                media.className = "media-content";
+            var icon = document.createElement("i");
+            icon.className = (agent === "You" ? "fas fas fa-2x fa-user" : agent === "Nelly" ? "nelly-icon" : "");
 
-                var content = document.createElement("div");
-                content.className = "content";
+            var media = document.createElement("div");
+            media.className = "media-content";
 
-                var para = document.createElement("p");
-                if(isHTML(text) === true){
+            var content = document.createElement("div");
+            content.className = "content";
+
+            var para = document.createElement("p");
+            if(isHTML(text) === true){
                 para.innerHTML = text
                 }
-		if(isImg(text) === true){
-		  text = text.replace(/"/g,"")
-		  link_address = "url("+text+")"
-		  para.style.backgroundImage = link_address
-		  replaced_val = para.style.backgroundImage.replace('("','(')
-		  para.style.backgroundImage = replaced_val.replace('")',')')
-		}
-                else{
+		    if(isImg(text) === true){
+		        text = text.replace(/"/g,"")
+		        link_address = "url("+text+")"
+		        para.style.backgroundImage = link_address
+		        replaced_val = para.style.backgroundImage.replace('("','(')
+		        para.style.backgroundImage = replaced_val.replace('")',')')
+		        }
+            else{
                 var paraText = document.createTextNode(text);
                 para.appendChild(paraText);
                 }
-                content.appendChild(para);
-                media.appendChild(content);
-                span.appendChild(icon);
-                figure.appendChild(span);
+            content.appendChild(para);
+            media.appendChild(content);
+            span.appendChild(icon);
+            figure.appendChild(span);
 
-                if (agent !== "Instructions") {
-                    article.appendChild(figure);
+            if (agent !== "Instructions") {
+                article.appendChild(figure);
                 };
-                article.appendChild(media);
+            article.appendChild(media);
 
-                if(agent==="You"){
-                  article.style.float="right";
+            if(agent==="You"){
+                article.style.float="right";
                 };
-                if(agent==="Nelly"){
-                  article.style.float="left";
+            if(agent==="Nelly"){
+                article.style.float="left";
                 };
 
-                return article;
+            return article;
             }
+
+
 	    function setChatRow(article,text){
-	     var children_length = article.children;
-	     var paraText = document.createTextNode(text);
-             children_length[article.children.length-1].append(paraText)
-	     return article
-	    }
-            function onLogout(){
-            fetch('/logout/', {
-                      headers: new Headers({
-                        "content-type": "application/json"
-                      }),
-                      method: 'GET',
-                  }).then(response=>response.json()).then(resp=>{
-		  window.location.href = resp.data
-            })
-            }
-            document.getElementById("interact").addEventListener("submit", function(event){
-                event.preventDefault()
-                var text = document.getElementById("userInput").value;
-                if(text.trim() != ""){
-                  var userMessage = {
-                    data : text
-                  };
-                  document.getElementById('userInput').value = "";
+	        var children_length = article.children;
+	        var paraText = document.createTextNode(text);
+            children_length[article.children.length-1].append(paraText)
+	        return article
+	        }
 
-                  var parDiv = document.getElementById("parent");
-		  var date_info_user = document.createElement("p")
-	    	  date_info_user.innerHTML = new Date();
-                  parDiv.append(createChatRow("You", text));
-                  parDiv.scrollTo(0, parDiv.scrollHeight);
-		  date_info_user.style.float = "right"
-		  parDiv.append(date_info_user)
-		  parDiv.scrollTo(0, parDiv.scrollHeight);
-		   fetch('/postMessage/', {
-                      headers: new Headers({
-                        "content-type": "application/json"
-                      }),
-                      method: 'POST',
-                      body: JSON.stringify(userMessage)
-                  }).then(response=>response.json()).then(resp=>{
-                      // Change info for Model response
-                      if(resp.data == 'NoActiveSession / Session closed')
-                      {
-                        window.location.href = "/"
-                      }
-                      else
-                      {
-                        var date_info_nelly = document.createElement("p")
-                            date_info_nelly.innerHTML = new Date();
-                            parDiv.append(createChatRow("Nelly", resp.data.text.text));
-                                    parDiv.scrollTo(0, parDiv.scrollHeight);
-                        date_info_nelly.style.float = "left"
-                        parDiv.append(date_info_nelly)
-                        parDiv.scrollTo(0, parDiv.scrollHeight);
-                      }
-                  })
-                }
-            });
-            document.getElementById("interact").addEventListener("reset", function(event){
-                event.preventDefault()
-                var text = document.getElementById("userInput").value;
+
+        function onLogout(){
+            fetch('/logout/', {
+                headers: new Headers({
+                    "content-type": "application/json"
+                    }),
+                method: 'GET',
+                }).then(response=>response.json()).then(resp=>{
+		  window.location.href = resp.data
+           })
+        }
+
+        document.getElementById("interact").addEventListener("submit", function(event){
+            event.preventDefault()
+            var text = document.getElementById("userInput").value;
+            if(text.trim() != ""){
+                var userMessage = {
+                    data : text
+                    };
                 document.getElementById('userInput').value = "";
 
-                fetch('/close/', {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                var parDiv = document.getElementById("parent");
+		        var date_info_user = document.createElement("p")
+	    	    date_info_user.innerHTML = new Date();
+                parDiv.append(createChatRow("You", text));
+                parDiv.scrollTo(0, parDiv.scrollHeight);
+		        date_info_user.style.float = "right"
+		        parDiv.append(date_info_user)
+		        parDiv.scrollTo(0, parDiv.scrollHeight);
+		        fetch('/postMessage/', {
+                     headers: new Headers({
+                         "content-type": "application/json"
+                        }),
                     method: 'POST',
+                    body: JSON.stringify(userMessage)
+                    }).then(response=>response.json()).then(resp=>{
+                        // Change info for Model response
+                        if(resp.data == 'NoActiveSession / Session closed')
+                            {
+                            window.location.href = "/"
+                            }
+                        else
+                            {
+                            var date_info_nelly = document.createElement("p")
+                            date_info_nelly.innerHTML = new Date();
+                            parDiv.append(createChatRow("Nelly", resp.data.text.text));
+                            parDiv.scrollTo(0, parDiv.scrollHeight);
+                            date_info_nelly.style.float = "left"
+                            parDiv.append(date_info_nelly)
+                            parDiv.scrollTo(0, parDiv.scrollHeight);
+                            }
+                        })
+                }
+            });
+
+        document.getElementById("interact").addEventListener("reset", function(event){
+            event.preventDefault()
+            var text = document.getElementById("userInput").value;
+            document.getElementById('userInput').value = "";
+
+            fetch('/close/', {
+                headers: {
+                    'Content-Type': 'application/json'
+                    },
+                method: 'POST',
                 }).then(data=>{
-                    childNodes = document.getElementsByClassName('child')
-                    while (childNodes.length>0) {
+                   childNodes = document.getElementsByClassName('child')
+                   while (childNodes.length>0) {
                       childNodes[0].parentNode.removeChild(childNodes[0]);
-                    }
+                   }
                 })
             });
-            var data = '{{data}}'
-            var feedback_link = "Click here to provide us your feedback by filling the survey"
-            var result = feedback_link.link("https://docs.google.com/forms/d/1Ld6J74RTZl9zvmk4muq28BLfF7FLq9lMwsrHNnFZtqQ")
-            var parser = new DOMParser();
-	        var doc = parser.parseFromString(result, 'text/html');
-            if(data.length<=2){
-              console.log("No history records")
+
+        var data = '{{data}}'
+        var feedback_link = "Click here to provide us your feedback by filling the survey"
+        var result = feedback_link.link("https://docs.google.com/forms/d/1Ld6J74RTZl9zvmk4muq28BLfF7FLq9lMwsrHNnFZtqQ")
+        var parser = new DOMParser();
+	    var doc = parser.parseFromString(result, 'text/html');
+        if(data.length<=2){
+           console.log("No history records")
             }
-            else{
+        else{
             var parDiv = document.getElementById("parent");
             data = data.replace('[','')
             data = data.replace(']','')
             data = data.replace(/}/g,'}}')
             data = data.split('},')
             for(i=0;i<data.length;i++){
-            if(i==data.length-1){
-              data[i] = data[i].replace('}}','}')
+                if(i==data.length-1){
+                    data[i] = data[i].replace('}}','}')
+                    }
+                data[i] = JSON.parse(data[i].replace(/ &#39; /g,'\'').replace(/&#39;/g,'"').replace(/&#34;/g,'"'))
+                parDiv.append(createChatRow("You",data[i]["Message"]));
+                parDiv.scrollTo(0, parDiv.scrollHeight);
+                parDiv.append(createChatRow("Nelly",data[i]["Response"]));
+                parDiv.scrollTo(0, parDiv.scrollHeight);
+                }
             }
-            data[i] = JSON.parse(data[i].replace(/ &#39; /g,'\'').replace(/&#39;/g,'"').replace(/&#34;/g,'"'))
-            parDiv.append(createChatRow("You",data[i]["Message"]));
-            parDiv.scrollTo(0, parDiv.scrollHeight);
-            parDiv.append(createChatRow("Nelly",data[i]["Response"]));
-            parDiv.scrollTo(0, parDiv.scrollHeight);
-            }
-            }
-            if(data.length>=25){
+        if(data.length>=25){
             parDiv.append(createChatRow("Nelly",doc.body.innerHTML));
             parDiv.scrollTo(0, parDiv.scrollHeight);
             }

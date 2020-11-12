@@ -176,6 +176,8 @@ def get_sessionId():
         jsonified_data = json.loads(data)
         session_id = jsonified_data['sessionId']
         records_number = jsonified_data['records_number']
+        # history = jsonified_data['history']
+        history = 'no'
         cur = mysql.connection.cursor()
         query_string = "select customer_email from user where session_id = %s"
         cur.execute(query_string,(session_id,))
@@ -192,6 +194,8 @@ def get_sessionId():
                 logger.debug("No sessions list with given customer_email")
                 return make_response(jsonify(message="No sessions list with given customer_email"),404)
             else:
+                if len(sessions_list) < records_number or history=='yes':
+                    records_number = len(sessions_list)
                 for records in range(0,records_number):
                     sessionid_list.append(sessions_list[records])
                 return make_response(jsonify(message="Sessions List",data={"session_list":sessionid_list}),200)      

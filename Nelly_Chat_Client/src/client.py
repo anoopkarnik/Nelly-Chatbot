@@ -132,10 +132,13 @@ def index(createNesSessionId = False):
             for data in history:
                 for messages in data:
                     results_list.append({"Message":messages["Message"],"Response":messages["Response"]})
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    print(results_list)
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     response = make_response(render_template('index.html',data=results_list))
     _createNewSession(sessionId)
     response.set_cookie("sessionId", sessionId)
-    return  response
+    return response
 
 @chat_bluePrint.route("/history/", methods=["Get"])
 def getHistory():
