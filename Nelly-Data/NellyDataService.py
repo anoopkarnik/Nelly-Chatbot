@@ -5,6 +5,23 @@ from bson import json_util
 from NellyStore import *
 from Utility import *
 
+class ChatServiceRoot(object):
+     def on_post(self,req,resp):
+        try:
+            raw_json = req.bounded_stream.read()
+        except Exception as ex:
+            raise falcon.HTTPError(falcon.HTTP_400, 'Error', ex.message)
+        try:
+            pd = json.loads(raw_json, encoding='utf-8')
+            IDList = pd['IDList']
+            result = db_getMultipleSessionChat(IDList)
+            result = json.dumps(result,default=json_util.default)
+            resp.status = falcon.HTTP_200
+            resp.body = result
+            print("Return data length {0}".format(len(result)))
+        except ValueError:
+            raise falcon.HTTPError(falcon.HTTP_400, 'Invalid JSON', 'Invalid JSON')
+
 class ChatService(object):
     def on_post(self, req, resp,SessionID):
         try:
@@ -49,8 +66,10 @@ class ChatByID(object):
     def on_get(self,req,resp,id):
         result = ChatData()
         result.loadFromJson(db_getChatByID(id))
-        result.IRESData = result.IRESData.MyJson()
-        result.EmotionData = result.EmotionData.MyJson()
+        if result.IRES_ID is not None:
+            result.IRESData = result.IRESData.MyJson()
+        if result.Emotion_ID is not None:
+            result.EmotionData = result.EmotionData.MyJson()
         resp.status = falcon.HTTP_200
         resp.body = json.dumps(result.MyJson(),default=json_util.default)
 

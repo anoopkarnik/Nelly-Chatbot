@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Nelly-Data</Name>
     <RootNamespace>Nelly-Data</RootNamespace>
-    <InterpreterId>CondaEnv|CondaEnv|Web</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|falcon</InterpreterId>
     <TestFramework>Pytest</TestFramework>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
@@ -25,6 +25,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="NellyReport.py" />
     <Compile Include="Testing.py" />
     <Compile Include="Config.py" />
     <Compile Include="NellyDataService.py">
@@ -46,8 +47,7 @@
     <Folder Include="static\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|Web" />
-    <InterpreterReference Include="CondaEnv|CondaEnv|WebFlask" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|falcon" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

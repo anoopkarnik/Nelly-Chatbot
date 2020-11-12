@@ -10,6 +10,9 @@ import pathlib
 cls = falcon.API()
 cls.req_options.auto_parse_form_urlencoded=True
 
+_ChatServiceRoot = ChatServiceRoot()
+cls.add_route('/', _ChatServiceRoot)
+
 _chatService = ChatService()
 cls.add_route('/{SessionID}', _chatService)
 cls.add_route('/Chat/{SessionID}', _chatService)
@@ -29,21 +32,20 @@ cls.add_route('/IRESByID/{id}',_IRESByIDService)
 _EmotionByIDService = EmotionByID()
 cls.add_route('/EmotionByID/{id}',_EmotionByIDService)
 
-
-SCHEMA_URL = '/static/swagger.json'
-STATIC_PATH = '/home/ubuntu/Nelly8001/Nelly-Data/static'
+STATIC_PATH = '/home/ubuntu/Nelly-Data/static'
 cls.add_static_route('/static', str(STATIC_PATH))
+
+
+
 register_swaggerui_app(
-    cls, '/swagger', SCHEMA_URL,
+    cls, '/swagger', '/static/swagger.json',
     page_title='Swagger:Nelly Data Service',
     favicon_url='https://falconframework.org/favicon-32x32.png',
     config={'supportedSubmitMethods': ['get'], }
 )
 
-#waitress-serve --port=8000 things:app
-
 if __name__ == '__main__':
     _port =int(Config.Http_Config['Port'])
-    print('Please connect to the link: http://{}:{}/'.format('0.0.0.0', _port))
+    print('Please connect to the link: http://{}:{}/'.format('', _port))
     httpd = make_server('0.0.0.0',_port, cls)
     httpd.serve_forever()

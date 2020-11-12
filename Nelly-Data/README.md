@@ -7,7 +7,7 @@ conda install pytorch torchvision cpuonly -c pytorch
 ## Running Application
  
 -   python NellyRoute.py
-
+-   gunicorn -b 0.0.0.0:5000 main:app --reload
 ## Configuration Changes
 	Config.py
 
